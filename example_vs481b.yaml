@@ -1,0 +1,73 @@
+esphome:
+  name: hdmi-switch
+  friendly_name: hdmi-switch
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: arduino
+
+api:
+  encryption:
+    key: ""
+
+ota:
+  password: ""
+
+wifi:
+  ssid: ""
+  password: ""
+
+  # Fallback AP
+  ap:
+    ssid: ""
+    password: ""  
+
+uart:
+  baud_rate: 19200
+  tx_pin: 
+    number: < your TX pin >
+    inverted: false
+  rx_pin: 
+    number: < your RX pin >
+    inverted: false
+  data_bits: 8
+  stop_bits: 1
+  parity: NONE
+
+vs481b:
+  ports:
+    - Laptop
+    - Switch
+    - Xbox
+    - Hotplug
+  update_interval: 1s
+  defaults:
+    port: 1
+    hpd: off
+
+select:
+  - platform: vs481b
+    ports:
+      name: "Ports"
+    auto_port:
+      name: "Auto Port"
+    mode:
+      name: "Mode"
+
+text_sensor:
+  - platform: vs481b
+    firmware:
+      name: "Firmware version"
+
+switch:
+  - platform: vs481b
+    goto:
+      name: "Goto"
+    output:
+      name: "Output"
+    hpd:
+      name: "Hotplug detect"
+
+captive_portal:
+    
