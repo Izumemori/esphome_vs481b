@@ -1,5 +1,12 @@
 An [Esphome](https://esphome.io/) external component for controlling the [ATEN VS481B (and similar)](https://www.aten.com/eu/en/products/professional-audiovideo/video-switches/vs481b/) HDMI Switch via its serial port.
 
+To use this external component add
+```yaml
+external_components:
+  - source: github://Izumemori/esphome_vs481b@master
+```
+to your yaml.
+
 - [Confirmed Working HDMI Switches](#confirmed-working-hdmi-switches)
 - [Minimal Base Configuration](#minimal-base-configuration)
 - [Features](#features)

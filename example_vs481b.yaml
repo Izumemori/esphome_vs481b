@@ -23,6 +23,9 @@ wifi:
     ssid: ""
     password: ""  
 
+external_components:
+  - source: github://Izumemori/esphome_vs481b@master
+
 uart:
   baud_rate: 19200
   tx_pin: 
