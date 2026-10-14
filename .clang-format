@@ -1,0 +1,6 @@
+# Matches ESPHome core's style
+BasedOnStyle: Google
+ColumnLimit: 120
+DerivePointerAlignment: false
+PointerAlignment: Right
+SortIncludes: false

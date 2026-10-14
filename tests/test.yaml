@@ -1,0 +1,58 @@
+# Test config used by `nix flake check` and CI.
+# Pulls the component from this checkout instead of GitHub.
+esphome:
+  name: vs481b-test
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: arduino
+
+logger:
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+
+uart:
+  baud_rate: 19200
+  tx_pin: 16
+  rx_pin: 17
+  data_bits: 8
+  stop_bits: 1
+  parity: NONE
+
+vs481b:
+  ports:
+    - Laptop
+    - Switch
+    - Xbox
+    - Hotplug
+  update_interval: 1s
+  defaults:
+    port: 1
+    hpd: off
+
+select:
+  - platform: vs481b
+    ports:
+      name: "Ports"
+    auto_port:
+      name: "Auto Port"
+    mode:
+      name: "Mode"
+
+text_sensor:
+  - platform: vs481b
+    firmware:
+      name: "Firmware version"
+
+switch:
+  - platform: vs481b
+    goto:
+      name: "Goto"
+    output:
+      name: "Output"
+    hpd:
+      name: "Hotplug detect"
