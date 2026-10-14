@@ -15,9 +15,6 @@ CONF_PORTS = "ports"
 CONF_MODE = "mode"
 CONF_AUTO_PORT = "auto_port"
 
-# Must match mode_to_str() in mode.h
-MODE_OPTIONS = ["Next", "Default", "Auto"]
-
 CONFIG_SCHEMA = VS481BBaseSchema.extend(
     {
         cv.Optional(CONF_PORTS): select.select_schema(port_select).extend(
@@ -36,14 +33,11 @@ CONFIG_SCHEMA = VS481BBaseSchema.extend(
 async def to_code(config):
     parent = await cg.get_variable(config[CONF_VS481B_ID])
 
-    # Port options are taken from the parent's `ports` list at runtime (see setup())
-    for key, options in (
-        (CONF_PORTS, []),
-        (CONF_MODE, MODE_OPTIONS),
-        (CONF_AUTO_PORT, []),
-    ):
+    # Options are set at runtime in each select's setup(): the port names from the
+    # parent's `ports` list, the mode names from mode_to_str() in mode.h
+    for key in (CONF_PORTS, CONF_MODE, CONF_AUTO_PORT):
         if key not in config:
             continue
-        var = await select.new_select(config[key], options=options)
+        var = await select.new_select(config[key], options=[])
         await cg.register_component(var, config[key])
         cg.add(var.set_parent(parent))

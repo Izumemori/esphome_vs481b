@@ -5,7 +5,9 @@ namespace vs481b {
 static const char *const TAG = "vs481b.mode_select";
 
 void ModeSelect::setup() {
-  // Options are set from codegen
+  // Option names come from mode_to_str(), so they always match what control() parses
+  this->traits.set_options({mode_to_str(Mode::M_NEXT), mode_to_str(Mode::M_DEFAULT), mode_to_str(Mode::M_AUTO)});
+
   this->parent_->mode_callback.add([this](Mode state) { this->publish_state(mode_to_str(state)); });
 }
 
