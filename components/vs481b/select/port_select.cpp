@@ -21,8 +21,8 @@ namespace vs481b {
     }
 
     void PortSelect::control(size_t index) {
-        if (!this->parent->set_port(index + 1) && this->has_state())
-            this->publish_state(this->active_index_);
+        // State is published by port_callback once the switch answers
+        this->parent->set_port(index + 1);
     }
 }
 }

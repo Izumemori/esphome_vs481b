@@ -12,8 +12,8 @@ namespace vs481b {
     }
 
     void ModeSelect::control(size_t index) {
-        if (!this->parent->set_mode(str_to_mode(this->option_at(index))) && this->has_state())
-            this->publish_state(this->active_index_);
+        // State is published by mode_callback once the switch answers
+        this->parent->set_mode(str_to_mode(this->option_at(index)));
     }
 }
 }

@@ -11,8 +11,8 @@ namespace vs481b {
     }
 
     void HPDSwitch::write_state(bool state) {
-        if (!this->parent->set_hpd(state))
-            this->publish_state(this->state);
+        // State is published by hpd_callback once the switch answers
+        this->parent->set_hpd(state);
     }
 }
 }

@@ -11,8 +11,8 @@ namespace vs481b {
     }
 
     void GotoSwitch::write_state(bool state) {
-        if (!this->parent->set_goto(state))
-            this->publish_state(this->state);
+        // State is published by goto_callback once the switch answers
+        this->parent->set_goto(state);
     }
 }
 }

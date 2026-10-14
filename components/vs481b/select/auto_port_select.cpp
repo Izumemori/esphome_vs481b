@@ -21,8 +21,8 @@ namespace vs481b {
     }
 
     void AutoPortSelect::control(size_t index) {
-        if (!this->parent->set_auto_port(index + 1) && this->has_state())
-            this->publish_state(this->active_index_);
+        // State is published by auto_port_callback once the switch answers
+        this->parent->set_auto_port(index + 1);
     }
 }
 }

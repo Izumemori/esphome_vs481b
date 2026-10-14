@@ -11,8 +11,8 @@ namespace vs481b {
     }
 
     void OutputSwitch::write_state(bool state) {
-        if (!this->parent->set_output(state))
-            this->publish_state(this->state);
+        // State is published by output_callback once the switch answers
+        this->parent->set_output(state);
     }
 }
 }
