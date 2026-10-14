@@ -108,7 +108,7 @@
               ruff-check.enable = true;
               clang-format.enable = true;
             };
-            
+
             flakeCheck = false;
           };
 

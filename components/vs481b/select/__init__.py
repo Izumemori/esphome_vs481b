@@ -1,7 +1,8 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import select
-from .. import vs481b_ns, VS481BBaseSchema
+
+from .. import VS481BBaseSchema, vs481b_ns
 from ..const import CONF_VS481B_ID
 
 DEPENDENCIES = ["vs481b"]

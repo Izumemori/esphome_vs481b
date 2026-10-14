@@ -1,7 +1,8 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import switch
-from .. import vs481b_ns, VS481BBaseSchema
+
+from .. import VS481BBaseSchema, vs481b_ns
 from ..const import CONF_VS481B_ID
 
 DEPENDENCIES = ["vs481b"]
@@ -18,19 +19,13 @@ CONFIG_SCHEMA = VS481BBaseSchema.extend(
     {
         cv.Optional(CONF_GOTO): switch.switch_schema(
             goto_switch, default_restore_mode="DISABLED"
-        ).extend(
-            cv.COMPONENT_SCHEMA
-        ),
+        ).extend(cv.COMPONENT_SCHEMA),
         cv.Optional(CONF_OUTPUT): switch.switch_schema(
             output_switch, default_restore_mode="DISABLED"
-        ).extend(
-            cv.COMPONENT_SCHEMA
-        ),
+        ).extend(cv.COMPONENT_SCHEMA),
         cv.Optional(CONF_HPD): switch.switch_schema(
             hpd_switch, default_restore_mode="DISABLED"
-        ).extend(
-            cv.COMPONENT_SCHEMA
-        ),
+        ).extend(cv.COMPONENT_SCHEMA),
     }
 )
 
