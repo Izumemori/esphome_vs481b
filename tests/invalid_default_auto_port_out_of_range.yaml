@@ -1,0 +1,11 @@
+# Default auto port below 1.
+# expect: Must be between 1 and 4, the number of configured ports
+substitutions:
+  name: vs481b-invalid
+
+packages:
+  base: !include common/base.yaml
+
+vs481b:
+  defaults:
+    auto_port: 0

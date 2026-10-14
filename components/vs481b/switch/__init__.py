@@ -16,10 +16,14 @@ CONF_HPD = "hpd"
 
 CONFIG_SCHEMA = VS481BBaseSchema.extend(
     {
-        cv.Optional(CONF_GOTO): switch.switch_schema(goto_switch).extend(
+        cv.Optional(CONF_GOTO): switch.switch_schema(
+            goto_switch, default_restore_mode="DISABLED"
+        ).extend(
             cv.COMPONENT_SCHEMA
         ),
-        cv.Optional(CONF_OUTPUT): switch.switch_schema(output_switch).extend(
+        cv.Optional(CONF_OUTPUT): switch.switch_schema(
+            output_switch, default_restore_mode="DISABLED"
+        ).extend(
             cv.COMPONENT_SCHEMA
         ),
         cv.Optional(CONF_HPD): switch.switch_schema(

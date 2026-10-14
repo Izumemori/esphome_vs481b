@@ -1,0 +1,27 @@
+# Duplicate names would make the port select switch to the wrong input.
+# Standalone: package lists are appended, so ports can't be overridden from common/base.yaml.
+# expect: Port name 'Xbox' is used more than once
+esphome:
+  name: vs481b-invalid
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: arduino
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+
+uart:
+  baud_rate: 19200
+  tx_pin: 16
+  rx_pin: 17
+
+vs481b:
+  ports:
+    - Laptop
+    - Xbox
+    - Xbox
+    - Hotplug

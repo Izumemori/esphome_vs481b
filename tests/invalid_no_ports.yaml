@@ -1,0 +1,23 @@
+# At least one port is required.
+# Standalone: package lists are appended, so ports can't be overridden from common/base.yaml.
+# expect: length of value must be at least 1
+esphome:
+  name: vs481b-invalid
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: arduino
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+
+uart:
+  baud_rate: 19200
+  tx_pin: 16
+  rx_pin: 17
+
+vs481b:
+  ports: []

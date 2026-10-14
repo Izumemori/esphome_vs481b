@@ -1,0 +1,11 @@
+# Auto mode needs an auto port to switch to.
+# expect: Mode AUTO requires 'auto_port' to be set as well
+substitutions:
+  name: vs481b-invalid
+
+packages:
+  base: !include common/base.yaml
+
+vs481b:
+  defaults:
+    mode: auto

@@ -146,9 +146,26 @@
                 cp -r ${./components} components
                 cp -r ${./tests} tests
                 chmod -R u+w .
+                # invalid_*.yaml must fail validation with the message in their "# expect:" line
                 for config in tests/*.yaml; do
                   echo "Checking $config"
-                  esphome config "$config" > /dev/null
+                  case "$config" in
+                    tests/invalid_*)
+                      expected=$(sed -n 's/^# expect: //p' "$config")
+                      if esphome config "$config" > out.log 2>&1; then
+                        echo "$config: expected validation to fail"
+                        exit 1
+                      fi
+                      if ! grep -qF "$expected" out.log; then
+                        echo "$config: expected error not found: $expected"
+                        cat out.log
+                        exit 1
+                      fi
+                      ;;
+                    *)
+                      esphome config "$config" > /dev/null
+                      ;;
+                  esac
                 done
                 touch $out
               '';

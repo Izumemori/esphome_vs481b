@@ -1,0 +1,10 @@
+# Replies can't be read without an RX pin.
+# expect: to declare a rx_pin
+substitutions:
+  name: vs481b-invalid
+
+packages:
+  base: !include common/base.yaml
+
+uart:
+  rx_pin: !remove
