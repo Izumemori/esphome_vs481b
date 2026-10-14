@@ -1,5 +1,3 @@
-# Test config used by `nix flake check` and CI.
-# Pulls the component from this checkout instead of GitHub.
 esphome:
   name: vs481b-test
 

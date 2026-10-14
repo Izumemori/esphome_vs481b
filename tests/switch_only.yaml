@@ -1,0 +1,14 @@
+substitutions:
+  name: vs481b-switch-only
+
+packages:
+  base: !include common/base.yaml
+
+switch:
+  - platform: vs481b
+    goto:
+      name: "Goto"
+    output:
+      name: "Output"
+    hpd:
+      name: "Hotplug detect"

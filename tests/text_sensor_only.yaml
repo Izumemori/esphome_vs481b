@@ -1,0 +1,10 @@
+substitutions:
+  name: vs481b-text-sensor-only
+
+packages:
+  base: !include common/base.yaml
+
+text_sensor:
+  - platform: vs481b
+    firmware:
+      name: "Firmware version"

@@ -146,7 +146,10 @@
                 cp -r ${./components} components
                 cp -r ${./tests} tests
                 chmod -R u+w .
-                esphome config tests/test.yaml > /dev/null
+                for config in tests/*.yaml; do
+                  echo "Checking $config"
+                  esphome config "$config" > /dev/null
+                done
                 touch $out
               '';
         };

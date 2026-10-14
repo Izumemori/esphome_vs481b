@@ -1,0 +1,14 @@
+substitutions:
+  name: vs481b-select-only
+
+packages:
+  base: !include common/base.yaml
+
+select:
+  - platform: vs481b
+    ports:
+      name: "Ports"
+    auto_port:
+      name: "Auto Port"
+    mode:
+      name: "Mode"
