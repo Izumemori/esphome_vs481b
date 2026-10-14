@@ -26,7 +26,8 @@ void VS481B::setup() {
     if (this->default_settings.goto_enabled.has_value())
         this->set_goto(this->default_settings.goto_enabled.value());
 
-    this->set_hpd(this->default_settings.hpd_enabled);
+    if (this->default_settings.hpd_enabled.has_value())
+        this->set_hpd(this->default_settings.hpd_enabled.value());
 }
 
 void VS481B::loop() {
@@ -209,7 +210,8 @@ void VS481B::set_hpd(bool state) {
             this->current_settings.hpd_enabled = state;
 
         // HPD can't be read back, so this always reflects the last successful command
-        this->hpd_callback.call(this->current_settings.hpd_enabled);
+        if (this->current_settings.hpd_enabled.has_value())
+            this->hpd_callback.call(*this->current_settings.hpd_enabled);
     });
 }
 

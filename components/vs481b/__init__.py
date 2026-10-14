@@ -39,7 +39,7 @@ CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
         cv.Optional(CONF_DEFAULT_MODE): cv.enum(mode_mapping, upper=True),
         cv.Optional(CONF_DEFAULT_AUTO_PORT): cv.int_,
         cv.Optional(CONF_DEFAULT_GOTO): cv.boolean,
-        cv.Optional(CONF_DEFAULT_HPD, False): cv.boolean
+        cv.Optional(CONF_DEFAULT_HPD): cv.boolean
     })
 }).extend(cv.polling_component_schema("5s"))
 
@@ -62,7 +62,7 @@ async def to_code(config):
         ('mode', defaults[CONF_DEFAULT_MODE] if CONF_DEFAULT_MODE in defaults else None),
         ('auto_port', defaults[CONF_DEFAULT_AUTO_PORT] if CONF_DEFAULT_AUTO_PORT in defaults else None),
         ('goto_enabled', defaults[CONF_DEFAULT_GOTO] if CONF_DEFAULT_GOTO in defaults else None),
-        ('hpd_enabled', defaults[CONF_DEFAULT_HPD])
+        ('hpd_enabled', defaults[CONF_DEFAULT_HPD] if CONF_DEFAULT_HPD in defaults else None)
     )
 
     cg.add(var.register_ports(config[CONF_PORTS]))

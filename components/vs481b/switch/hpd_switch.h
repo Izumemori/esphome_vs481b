@@ -16,6 +16,9 @@ class HPDSwitch : public Component, public switch_::Switch {
 
         void set_parent(vs481b::VS481B* parent) { this->parent = parent; }
 
+        // The switch doesn't report HPD in its read reply, so this is only the last value sent
+        bool assumed_state() override { return true; }
+
     protected:
         void write_state(bool state) override;
 

@@ -18,7 +18,7 @@ namespace vs481b
         optional<bool> goto_enabled;
         optional<int> auto_port;
         std::string fw_version;
-        bool hpd_enabled;
+        optional<bool> hpd_enabled;
     } typedef Settings;
 } // namespace vs481b
 } // namespace esphome

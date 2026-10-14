@@ -22,7 +22,9 @@ CONFIG_SCHEMA = VS481BBaseSchema.extend(
         cv.Optional(CONF_OUTPUT): switch.switch_schema(output_switch).extend(
             cv.COMPONENT_SCHEMA
         ),
-        cv.Optional(CONF_HPD): switch.switch_schema(hpd_switch).extend(
+        cv.Optional(CONF_HPD): switch.switch_schema(
+            hpd_switch, default_restore_mode="DISABLED"
+        ).extend(
             cv.COMPONENT_SCHEMA
         ),
     }

@@ -190,7 +190,8 @@ switch:
 You can force source devices to read the EDID of the display connected to the switch.
 Forcing devices to read the EDID information can be somewhat slower.
 ##### Default configuration
-A default state for this feature can be set via `vs481b.defaults.output`
+A default state for this feature can be set via `vs481b.defaults.hpd`. It is sent once when the micro controller boots.
+If it is not set, no HPD command is sent and the switch keeps its own setting (off by default).
 ```yaml
 vs481b:
     ...
@@ -202,7 +203,9 @@ vs481b:
 ##### Switch configuration
 You can expose the Hot Plug detect parameter as an [esphome switch component](https://esphome.io/components/switch/index.html) using the `vs481b` platform.  
 :warning: I'd recommend against it! :warning:  
-There is no way to read back the setting from the switch and as such the state of the switch will be lost after a reboot of the micro controller.
+There is no way to read back the setting from the switch, so the entity only shows the last value that was successfully sent.
+It is unknown until then, and is shown as an assumed state (separate on/off buttons in Home Assistant).
+If the HDMI switch itself is power cycled, it may no longer match.
 ```yaml
 switch:
     - platform: vs481b
