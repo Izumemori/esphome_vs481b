@@ -33,6 +33,7 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
         void setup() override;
         void loop() override;
         void update() override;
+        void dump_config() override;
 
         void set_port(int port);
         void set_output(bool state);

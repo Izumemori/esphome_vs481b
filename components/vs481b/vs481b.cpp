@@ -38,6 +38,37 @@ void VS481B::apply_defaults_() {
         this->set_hpd(this->default_settings.hpd_enabled.value());
 }
 
+void VS481B::dump_config() {
+    ESP_LOGCONFIG(TAG, "VS481B:");
+    LOG_UPDATE_INTERVAL(this);
+    ESP_LOGCONFIG(TAG, "  Switch responding: %s", YESNO(this->switch_available_));
+
+    ESP_LOGCONFIG(TAG, "  Ports:");
+    for (size_t i = 0; i < this->ports.size(); i++)
+        ESP_LOGCONFIG(TAG, "    %u: %s", (unsigned) (i + 1), this->ports[i].c_str());
+
+    const Settings &defaults = this->default_settings;
+    ESP_LOGCONFIG(TAG, "  Defaults:");
+    if (defaults.port.has_value())
+        ESP_LOGCONFIG(TAG, "    Port: %d (%s)", *defaults.port, this->ports[*defaults.port - 1].c_str());
+    if (defaults.output_enabled.has_value())
+        ESP_LOGCONFIG(TAG, "    Output: %s", ONOFF(*defaults.output_enabled));
+    if (defaults.mode.has_value())
+        ESP_LOGCONFIG(TAG, "    Mode: %s", mode_to_str(*defaults.mode).c_str());
+    if (defaults.auto_port.has_value())
+        ESP_LOGCONFIG(TAG, "    Auto port: %d (%s)", *defaults.auto_port, this->ports[*defaults.auto_port - 1].c_str());
+    if (defaults.goto_enabled.has_value())
+        ESP_LOGCONFIG(TAG, "    Goto: %s", ONOFF(*defaults.goto_enabled));
+    if (defaults.hpd_enabled.has_value())
+        ESP_LOGCONFIG(TAG, "    HPD: %s", ONOFF(*defaults.hpd_enabled));
+    if (!defaults.port.has_value() && !defaults.output_enabled.has_value() && !defaults.mode.has_value()
+        && !defaults.auto_port.has_value() && !defaults.goto_enabled.has_value() && !defaults.hpd_enabled.has_value())
+        ESP_LOGCONFIG(TAG, "    (none)");
+
+    // Warns if the uart bus doesn't match the switch's 19200 8N1
+    this->check_uart_settings(19200);
+}
+
 void VS481B::loop() {
     uint8_t c;
     while (this->available() && this->read_byte(&c)) {
