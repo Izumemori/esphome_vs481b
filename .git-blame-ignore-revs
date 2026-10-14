@@ -1,0 +1,6 @@
+# Commits that only reformat code, skipped by `git blame`.
+# GitHub uses this file automatically; locally run:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: format codebase with treefmt
+79cf3faeeb4c2f73fd214c95a60ffc26186e0ac8
