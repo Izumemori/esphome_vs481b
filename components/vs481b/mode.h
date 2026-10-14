@@ -8,6 +8,7 @@ namespace esphome {
 namespace vs481b {
 
 enum Mode {
+    M_INVALID = -1,
     M_NEXT = 0,
     M_AUTO = 1,
     M_DEFAULT = 2
@@ -38,7 +39,10 @@ inline Mode str_to_mode(std::string input) {
     if (lower == "auto")
         return Mode::M_AUTO;
 
-    return Mode::M_DEFAULT;
+    if (lower == "default")
+        return Mode::M_DEFAULT;
+
+    return Mode::M_INVALID;
 }
 
 }

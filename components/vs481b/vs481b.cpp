@@ -137,7 +137,9 @@ void VS481B::apply_read_(const std::vector<std::string> &lines) {
             }
         } else if (sscanf(line, " Mode:%10s", value) == 1) {
             Mode mode = str_to_mode(value);
-            if (this->current_settings.mode != mode) {
+            if (mode == Mode::M_INVALID) {
+                ESP_LOGW(TAG, "Unrecognised mode in read reply: %s", line);
+            } else if (this->current_settings.mode != mode) {
                 this->current_settings.mode = mode;
                 this->mode_callback.call(mode);
             }
