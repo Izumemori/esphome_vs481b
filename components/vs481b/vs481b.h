@@ -8,8 +8,6 @@
 #include "esphome/components/select/select.h"
 #include "esphome/components/switch/switch.h"
 
-#include "select/port_select.h"
-
 #include "mode.h"
 #include "settings.h"
 

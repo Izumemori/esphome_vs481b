@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "esphome/core/optional.h"
+
 #include "mode.h"
 
 namespace esphome

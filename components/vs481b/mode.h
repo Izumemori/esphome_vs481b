@@ -1,6 +1,9 @@
 #ifndef MODE_H
 #define MODE_H
 
+#include <cctype>
+#include <string>
+
 namespace esphome {
 namespace vs481b {
 
