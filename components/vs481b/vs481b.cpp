@@ -62,7 +62,7 @@ void VS481B::loop() {
     if (!this->current_command_.has_value() && !this->queue_.empty()) {
         this->current_command_ = std::move(this->queue_.front());
         this->queue_.pop_front();
-        ESP_LOGD(TAG, "Sending command: %s", this->current_command_->command.c_str());
+        ESP_LOGV(TAG, "Sending command: %s", this->current_command_->command.c_str());
         this->response_.clear();
         this->write_str(this->current_command_->command.c_str());
         this->write_str("\r\n");
