@@ -1,5 +1,4 @@
-#ifndef GOTO_SWITCH_H
-#define GOTO_SWITCH_H
+#pragma once
 
 #include "../vs481b.h"
 #include "esphome/components/switch/switch.h"
@@ -8,21 +7,15 @@ namespace esphome
 {
 namespace vs481b
 {
-class VS481B;
 
-class GotoSwitch : public Component, public switch_::Switch {
+class GotoSwitch : public Component, public switch_::Switch, public Parented<VS481B> {
     public:
         void setup() override;
-
-        void set_parent(vs481b::VS481B* parent) { this->parent = parent; }
+        void dump_config() override;
 
     protected:
         void write_state(bool state) override;
-
-        vs481b::VS481B* parent;
 };
 
-} // namespace vs841b
+} // namespace vs481b
 } // namespace esphome
-
-#endif

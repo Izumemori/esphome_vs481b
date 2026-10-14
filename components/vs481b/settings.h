@@ -1,5 +1,4 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <string>
 
@@ -19,8 +18,6 @@ namespace vs481b
         optional<int> auto_port;
         std::string fw_version;
         optional<bool> hpd_enabled;
-    } typedef Settings;
+    };
 } // namespace vs481b
 } // namespace esphome
-
-#endif

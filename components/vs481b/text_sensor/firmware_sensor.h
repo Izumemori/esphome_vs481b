@@ -1,5 +1,4 @@
-#ifndef FIRMWARE_SENSOR_H
-#define FIRMWARE_SENSOR_H
+#pragma once
 
 #include "../vs481b.h"
 #include "esphome/components/text_sensor/text_sensor.h"
@@ -8,20 +7,12 @@ namespace esphome
 {
 namespace vs481b
 {
-class VS481B;
 
-class FirmwareSensor : public Component, public text_sensor::TextSensor {
+class FirmwareSensor : public Component, public text_sensor::TextSensor, public Parented<VS481B> {
     public:
         void setup() override;
-
-        void set_parent(vs481b::VS481B* parent) { this->parent = parent; }
-
-    protected:
-        vs481b::VS481B* parent;
+        void dump_config() override;
 };
 
-} // namespace vs841b
+} // namespace vs481b
 } // namespace esphome
-
-
-#endif

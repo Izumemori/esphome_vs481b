@@ -6,11 +6,11 @@
 namespace esphome{
 namespace vs481b {
 
-static const char *TAG = "vs481b";
+static const char *const TAG = "vs481b";
 static const uint32_t COMMAND_TIMEOUT_MS = 500;
 static const uint32_t MAX_LINE_LENGTH = 64;
-static const char *READ_COMMAND = "read";
-static const char *READ_LAST_LINE = "F/W:"; // Last line of a read reply, which has an extra AutoPort line in auto mode
+static const char *const READ_COMMAND = "read";
+static const char *const READ_LAST_LINE = "F/W:"; // Last line of a read reply, which has an extra AutoPort line in auto mode
 static const uint8_t FAILED_READS_UNTIL_UNAVAILABLE = 3;
 
 void VS481B::setup() {
@@ -54,7 +54,7 @@ void VS481B::dump_config() {
     if (defaults.output_enabled.has_value())
         ESP_LOGCONFIG(TAG, "    Output: %s", ONOFF(*defaults.output_enabled));
     if (defaults.mode.has_value())
-        ESP_LOGCONFIG(TAG, "    Mode: %s", mode_to_str(*defaults.mode).c_str());
+        ESP_LOGCONFIG(TAG, "    Mode: %s", mode_to_str(*defaults.mode));
     if (defaults.auto_port.has_value())
         ESP_LOGCONFIG(TAG, "    Auto port: %d (%s)", *defaults.auto_port, this->ports[*defaults.auto_port - 1].c_str());
     if (defaults.goto_enabled.has_value())

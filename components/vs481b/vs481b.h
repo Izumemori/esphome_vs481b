@@ -1,9 +1,9 @@
-#ifndef VS841B_H
-#define VS841B_H
+#pragma once
 
 #include <deque>
 #include <functional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "esphome/core/component.h"
@@ -25,11 +25,8 @@ struct PendingCommand {
 
 class VS481B : public uart::UARTDevice, public PollingComponent {
     public:
-        inline void register_ports(std::vector<std::string> ports) { this->ports = ports; }
-        inline void register_defaults(Settings settings) 
-        { 
-            this->default_settings = settings;
-        }
+        void register_ports(std::vector<std::string> ports) { this->ports = std::move(ports); }
+        void register_defaults(const Settings &settings) { this->default_settings = settings; }
         void setup() override;
         void loop() override;
         void update() override;
@@ -57,7 +54,7 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
         CallbackManager<void(Mode)> mode_callback;
         CallbackManager<void(int)> auto_port_callback;
         CallbackManager<void(bool)> goto_callback;
-        CallbackManager<void(std::string)> fw_callback;
+        CallbackManager<void(const std::string &)> fw_callback;
         CallbackManager<void(bool)> hpd_callback;
         CallbackManager<void(bool)> available_callback;
 
@@ -87,7 +84,5 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
 
         std::vector<std::string> ports;
 };
-}
-}
-
-#endif
+} // namespace vs481b
+} // namespace esphome

@@ -1,8 +1,6 @@
-#ifndef MODE_H
-#define MODE_H
+#pragma once
 
-#include <cctype>
-#include <string>
+#include <strings.h>
 
 namespace esphome {
 namespace vs481b {
@@ -14,7 +12,7 @@ enum Mode {
     M_DEFAULT = 2
 };
 
-inline std::string mode_to_str(Mode mode) {
+inline const char *mode_to_str(Mode mode) {
     switch(mode) {
         case M_NEXT:
             return "Next";
@@ -28,24 +26,18 @@ inline std::string mode_to_str(Mode mode) {
     }
 }
 
-inline Mode str_to_mode(std::string input) {
-    std::string lower;
-    for (auto& c : input)
-        lower += std::tolower(c);
-    
-    if (lower == "next")
+inline Mode str_to_mode(const char *input) {
+    if (strcasecmp(input, "next") == 0)
         return Mode::M_NEXT;
 
-    if (lower == "auto")
+    if (strcasecmp(input, "auto") == 0)
         return Mode::M_AUTO;
 
-    if (lower == "default")
+    if (strcasecmp(input, "default") == 0)
         return Mode::M_DEFAULT;
 
     return Mode::M_INVALID;
 }
 
-}
-}
-
-#endif
+} // namespace vs481b
+} // namespace esphome

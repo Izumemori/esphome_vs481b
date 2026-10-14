@@ -10,7 +10,7 @@ from .const import (
 DEPENDENCIES = ['uart']
 
 vs481b_ns = cg.esphome_ns.namespace('vs481b')
-vs841b_class = vs481b_ns.class_('VS481B', cg.PollingComponent, uart.UARTDevice)
+vs481b_class = vs481b_ns.class_('VS481B', cg.PollingComponent, uart.UARTDevice)
 
 settings_struct = vs481b_ns.struct('Settings')
 mode_enum = vs481b_ns.enum('Mode')
@@ -63,7 +63,7 @@ def validate_defaults(config):
 
 CONFIG_SCHEMA = cv.All(
     uart.UART_DEVICE_SCHEMA.extend({
-        cv.GenerateID(): cv.declare_id(vs841b_class),
+        cv.GenerateID(): cv.declare_id(vs481b_class),
         cv.Required(CONF_PORTS): cv.All(
             cv.ensure_list(cv.string_strict), cv.Length(min=1), unique_port_names
         ),
@@ -91,7 +91,7 @@ FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
 )
 
 VS481BBaseSchema = cv.Schema({
-    cv.GenerateID(CONF_VS481B_ID): cv.use_id(vs841b_class)
+    cv.GenerateID(CONF_VS481B_ID): cv.use_id(vs481b_class)
 }
 )
 

@@ -1,5 +1,4 @@
-#ifndef PORT_SELECT_H
-#define PORT_SELECT_H
+#pragma once
 
 #include "../vs481b.h"
 #include "esphome/components/select/select.h"
@@ -8,21 +7,15 @@ namespace esphome
 {
 namespace vs481b
 {
-class VS481B;
 
-class PortSelect : public Component, public select::Select {
+class PortSelect : public Component, public select::Select, public Parented<VS481B> {
     public:
         void setup() override;
-
-        void set_parent(vs481b::VS481B* parent) { this->parent = parent; }
+        void dump_config() override;
 
     protected:
         void control(size_t index) override;
-        vs481b::VS481B* parent;
 };
 
-} // namespace vs841b
+} // namespace vs481b
 } // namespace esphome
-
-
-#endif

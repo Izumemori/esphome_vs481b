@@ -1,5 +1,4 @@
-#ifndef HPD_SWITCH_H
-#define HPD_SWITCH_H
+#pragma once
 
 #include "../vs481b.h"
 #include "esphome/components/switch/switch.h"
@@ -8,24 +7,18 @@ namespace esphome
 {
 namespace vs481b
 {
-class VS481B;
 
-class HPDSwitch : public Component, public switch_::Switch {
+class HPDSwitch : public Component, public switch_::Switch, public Parented<VS481B> {
     public:
         void setup() override;
-
-        void set_parent(vs481b::VS481B* parent) { this->parent = parent; }
+        void dump_config() override;
 
         // The switch doesn't report HPD in its read reply, so this is only the last value sent
         bool assumed_state() override { return true; }
 
     protected:
         void write_state(bool state) override;
-
-        vs481b::VS481B* parent;
 };
 
-} // namespace vs841b
+} // namespace vs481b
 } // namespace esphome
-
-#endif
