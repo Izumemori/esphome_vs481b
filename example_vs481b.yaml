@@ -64,6 +64,11 @@ text_sensor:
     firmware:
       name: "Firmware version"
 
+binary_sensor:
+  - platform: vs481b
+    connected:
+      name: "Switch connected"
+
 switch:
   - platform: vs481b
     goto:

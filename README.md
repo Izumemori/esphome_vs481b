@@ -34,6 +34,7 @@ to your yaml.
     - [Read Out Firmware Version](#read-out-firmware-version)
   - [Switch connection](#switch-connection)
 - [Full example](#full-example)
+- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [Specification](#specification)
 
