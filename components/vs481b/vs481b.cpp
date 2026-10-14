@@ -82,9 +82,6 @@ void VS481B::dump_config() {
   if (!defaults.port.has_value() && !defaults.output_enabled.has_value() && !defaults.mode.has_value() &&
       !defaults.auto_port.has_value() && !defaults.goto_enabled.has_value() && !defaults.hpd_enabled.has_value())
     ESP_LOGCONFIG(TAG, "    (none)");
-
-  // Warns if the uart bus doesn't match the switch's 19200 8N1
-  this->check_uart_settings(19200);
 }
 
 void VS481B::loop() {
