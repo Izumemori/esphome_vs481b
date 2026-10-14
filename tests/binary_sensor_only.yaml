@@ -1,0 +1,11 @@
+# Hub + binary_sensor platform only; select, switch and text_sensor are not loaded.
+substitutions:
+  name: vs481b-binary-sensor-only
+
+packages:
+  base: !include common/base.yaml
+
+binary_sensor:
+  - platform: vs481b
+    connected:
+      name: "Switch connected"

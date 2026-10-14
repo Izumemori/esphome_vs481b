@@ -11,9 +11,17 @@ static const uint32_t COMMAND_TIMEOUT_MS = 500;
 static const uint32_t MAX_LINE_LENGTH = 64;
 static const char *READ_COMMAND = "read";
 static const char *READ_LAST_LINE = "F/W:"; // Last line of a read reply, which has an extra AutoPort line in auto mode
+static const uint8_t FAILED_READS_UNTIL_UNAVAILABLE = 3;
 
 void VS481B::setup() {
-    // Queued now, sent from loop() ahead of the first read
+    // Defaults are applied once the switch answers its first read, see on_read_result_()
+    this->status_set_warning("Waiting for the switch to respond");
+}
+
+// Called when the switch becomes available: after boot, or after it stopped answering
+// (power cycled or disconnected). A rebooted switch is back on its own defaults, so ours
+// are sent again.
+void VS481B::apply_defaults_() {
     if (this->default_settings.port.has_value())
         this->set_port(this->default_settings.port.value());
 
@@ -71,7 +79,32 @@ void VS481B::update() {
     this->enqueue_(READ_COMMAND, 0, [this](bool ok, const std::vector<std::string> &lines) {
         if (ok)
             this->apply_read_(lines);
+        this->on_read_result_(ok);
     }, READ_LAST_LINE);
+}
+
+void VS481B::on_read_result_(bool ok) {
+    if (!ok) {
+        if (this->failed_reads_ < FAILED_READS_UNTIL_UNAVAILABLE)
+            this->failed_reads_++;
+        if (this->switch_available_ && this->failed_reads_ >= FAILED_READS_UNTIL_UNAVAILABLE) {
+            ESP_LOGW(TAG, "Switch stopped responding");
+            this->switch_available_ = false;
+            this->status_set_warning("Switch not responding");
+            this->available_callback.call(false);
+        }
+        return;
+    }
+
+    this->failed_reads_ = 0;
+    if (this->switch_available_)
+        return;
+
+    ESP_LOGI(TAG, "Switch is responding, applying defaults");
+    this->switch_available_ = true;
+    this->status_clear_warning();
+    this->available_callback.call(true);
+    this->apply_defaults_();
 }
 
 // Takes over the state the switch reports. Only publishes, never sends commands back.

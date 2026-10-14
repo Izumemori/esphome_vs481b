@@ -54,3 +54,8 @@ switch:
       name: "Output"
     hpd:
       name: "Hotplug detect"
+
+binary_sensor:
+  - platform: vs481b
+    connected:
+      name: "Switch connected"

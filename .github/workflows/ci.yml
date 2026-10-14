@@ -23,6 +23,7 @@ jobs:
           - select_only
           - switch_only
           - text_sensor_only
+          - binary_sensor_only
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v16

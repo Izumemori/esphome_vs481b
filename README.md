@@ -32,6 +32,7 @@ to your yaml.
     - [Default configuration](#default-configuration-5)
     - [Switch configuration](#switch-configuration-2)
     - [Read Out Firmware Version](#read-out-firmware-version)
+  - [Switch connection](#switch-connection)
 - [Full example](#full-example)
 - [Contributing](#contributing)
 - [Specification](#specification)
@@ -221,6 +222,19 @@ text_sensor:
   - platform: vs481b
     firmware:
       name: "Firmware version"
+```
+
+#### Switch connection
+The component polls the HDMI switch and treats it as unavailable after 3 failed reads in a row (about 3 seconds at `update_interval: 1s`).
+Defaults are sent once the switch answers after the micro controller boots, and again whenever it answers after being unavailable, for example after the switch was power cycled.
+
+ESPHome can't mark individual entities as unavailable in Home Assistant, so the select and switch entities keep their last state while the HDMI switch isn't answering.
+To see whether it is answering, add a connectivity [binary sensor](https://esphome.io/components/binary_sensor/index.html):
+```yaml
+binary_sensor:
+  - platform: vs481b
+    connected:
+      name: "Switch connected"
 ```
 
 ### Full example

@@ -46,6 +46,8 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
             return this->ports;
         }
 
+        bool is_switch_available() const { return this->switch_available_; }
+
         /*
             Callbacks
         */
@@ -56,6 +58,7 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
         CallbackManager<void(bool)> goto_callback;
         CallbackManager<void(std::string)> fw_callback;
         CallbackManager<void(bool)> hpd_callback;
+        CallbackManager<void(bool)> available_callback;
 
     protected:
         void enqueue_(std::string command, uint8_t expected_lines,
@@ -64,12 +67,19 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
         void handle_line_(std::string line);
         void finish_(bool ok);
         void apply_read_(const std::vector<std::string> &lines);
+        void apply_defaults_();
+        void on_read_result_(bool ok);
 
         std::deque<PendingCommand> queue_;
         optional<PendingCommand> current_command_;
         std::vector<std::string> response_;
         std::string line_buffer_;
         uint32_t sent_at_{0};
+
+        // The switch counts as available after a successful read, and unavailable after
+        // several failed reads in a row. Defaults are applied each time it becomes available.
+        bool switch_available_{false};
+        uint8_t failed_reads_{0};
 
         Settings current_settings;
         Settings default_settings;
