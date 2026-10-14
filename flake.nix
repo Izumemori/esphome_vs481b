@@ -59,6 +59,34 @@
                 }
               ];
           };
+
+          # ESPHome copies the component into its build dir before compiling, so the
+          # generated compile_commands.json points at those copies. Rewrite the paths to
+          # the checkout so clangd picks up the real flags for the files being edited.
+          gen-compile-db = pkgs.writeShellApplication {
+            name = "gen-compile-db";
+            runtimeInputs = with pkgs; [
+              esphome
+              git
+              gnused
+              findutils
+              coreutils
+            ];
+            text = ''
+              root=$(git rev-parse --show-toplevel)
+              config=$(realpath "''${1:-$root/tests/test.yaml}")
+
+              # compile_commands.json is only written by a real ESP-IDF build
+              esphome compile "$config"
+
+              db=$(find "$(dirname "$config")/.esphome/build" -path '*/build/compile_commands.json' \
+                -not -path '*/bootloader/*' -printf '%T@ %p\n' | sort -n | tail -n1 | cut -d' ' -f2-)
+              build_src=$(dirname "$(dirname "$db")")/src/esphome/components/vs481b
+
+              sed "s|$build_src|$root/components/vs481b|g" "$db" > "$root/compile_commands.json"
+              echo "Wrote $root/compile_commands.json (from $db)"
+            '';
+          };
         in
         {
           _module.args.pkgs = import inputs.nixpkgs {
@@ -102,8 +130,11 @@
               clang-tools
               vscode
               nixd
+              gen-compile-db
             ];
           };
+
+          packages.gen-compile-db = gen-compile-db;
 
           checks.config =
             pkgs.runCommand "vs481b-esphome-config"

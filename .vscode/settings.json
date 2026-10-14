@@ -9,6 +9,9 @@
   "[cpp]": {
     "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
   },
+  "clangd.arguments": [
+    "--query-driver=**/xtensa-esp*-elf-g*,**/riscv32-esp-elf-g*"
+  ],
   "nix.enableLanguageServer": true,
   "nix.formatterPath": "nixfmt",
   "nix.serverPath": "nixd"

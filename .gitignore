@@ -168,3 +168,6 @@ result-*
 # ESPHome
 .esphome/
 secrets.yaml
+
+# clangd
+compile_commands.json

@@ -1,14 +1,11 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-import voluptuous as vol
-from esphome.components import uart, select
-from esphome.const import CONF_ID, ICON_EMPTY, UNIT_EMPTY
+from esphome.components import uart
+from esphome.const import CONF_ID
 
 from .const import (
     CONF_VS481B_ID
 )
-
-Invalid = vol.Invalid
 
 DEPENDENCIES = ['uart']
 
@@ -36,7 +33,7 @@ CONF_DEFAULT_HPD = 'hpd'
 CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(vs841b_class),
     cv.Required(CONF_PORTS): cv.ensure_list(cv.string),
-    cv.Optional(CONF_DEFAULTS): cv.Schema({
+    cv.Optional(CONF_DEFAULTS, default={}): cv.Schema({
         cv.Optional(CONF_DEFAULT_PORT): cv.int_,
         cv.Optional(CONF_DEFAULT_OUTPUT): cv.boolean,
         cv.Optional(CONF_DEFAULT_MODE): cv.enum(mode_mapping, upper=True),
@@ -65,7 +62,7 @@ async def to_code(config):
         ('mode', defaults[CONF_DEFAULT_MODE] if CONF_DEFAULT_MODE in defaults else None),
         ('auto_port', defaults[CONF_DEFAULT_AUTO_PORT] if CONF_DEFAULT_AUTO_PORT in defaults else None),
         ('goto_enabled', defaults[CONF_DEFAULT_GOTO] if CONF_DEFAULT_GOTO in defaults else None),
-        ('hpd_enabled', config[CONF_DEFAULTS][CONF_DEFAULT_HPD])
+        ('hpd_enabled', defaults[CONF_DEFAULT_HPD])
     )
 
     cg.add(var.register_ports(config[CONF_PORTS]))

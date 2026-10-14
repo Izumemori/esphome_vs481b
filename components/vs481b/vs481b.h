@@ -34,7 +34,7 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
 
         bool set_hpd(bool state);
 
-        inline std::vector<std::string> get_ports() {
+        inline const std::vector<std::string> &get_ports() const {
             return this->ports;
         }
 

@@ -17,7 +17,7 @@ class ModeSelect : public Component, public select::Select {
         void set_parent(vs481b::VS481B* parent) { this->parent = parent; }
 
     protected:
-        void control(const std::string& value) override;
+        void control(size_t index) override;
         vs481b::VS481B* parent;
 };
 

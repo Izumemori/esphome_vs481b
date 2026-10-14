@@ -5,24 +5,24 @@ namespace vs481b {
     static const char *TAG = "vs481b.port_select";
 
     void PortSelect::setup() {
+        // Option pointers reference the parent's port names, which live for the whole program
+        const std::vector<std::string> &ports = this->parent->get_ports();
+        FixedVector<const char *> options;
+        options.init(ports.size());
+        for (const auto &port : ports)
+            options.push_back(port.c_str());
+        this->traits.set_options(options);
+
         this->parent->port_callback.add([this](int port) {
-            esphome:optional<std::string> state = at(port-1);
-            
-            if (!state.has_value()) return;
+            if (port < 1 || !this->has_index(port - 1)) return;
 
-            this->publish_state(state.value());
-        }) ;
-
-        this->traits.set_options(parent->get_ports());
+            this->publish_state(static_cast<size_t>(port - 1));
+        });
     }
 
-    void PortSelect::control(const std::string& state) {
-        esphome::optional<size_t> index = this->index_of(state);
-
-        if (!index.has_value()) return;
-
-        if (!this->parent->set_port(index.value() + 1))
-            this->publish_state(this->state);
+    void PortSelect::control(size_t index) {
+        if (!this->parent->set_port(index + 1) && this->has_state())
+            this->publish_state(this->active_index_);
     }
 }
 }

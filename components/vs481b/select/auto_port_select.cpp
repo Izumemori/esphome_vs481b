@@ -5,21 +5,24 @@ namespace vs481b {
     static const char *TAG = "vs481b.auto_port_select";
 
     void AutoPortSelect::setup() {
-        parent->output_callback.add([this](int port) {
-            esphome:optional<std::string> state = at(port-1);
-            if (!state.has_value()) return;
+        // Option pointers reference the parent's port names, which live for the whole program
+        const std::vector<std::string> &ports = this->parent->get_ports();
+        FixedVector<const char *> options;
+        options.init(ports.size());
+        for (const auto &port : ports)
+            options.push_back(port.c_str());
+        this->traits.set_options(options);
 
-            this->publish_state(state.value());
-        }) ;
+        this->parent->auto_port_callback.add([this](int port) {
+            if (port < 1 || !this->has_index(port - 1)) return;
 
-        this->traits.set_options(this->parent->get_ports());
+            this->publish_state(static_cast<size_t>(port - 1));
+        });
     }
 
-    void AutoPortSelect::control(const std::string& state) {
-        if (!this->has_option(state)) return;
-
-        if (!this->parent->set_mode(str_to_mode(state)))
-            this->publish_state(this->state);
+    void AutoPortSelect::control(size_t index) {
+        if (!this->parent->set_auto_port(index + 1) && this->has_state())
+            this->publish_state(this->active_index_);
     }
 }
 }
