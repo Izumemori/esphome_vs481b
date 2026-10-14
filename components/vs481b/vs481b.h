@@ -16,6 +16,9 @@ namespace esphome {
 namespace vs481b {
 
 struct PendingCommand {
+  // What the command sets ("port", "mode", ...). A newer command with the same key replaces
+  // one that is still waiting in the queue, so the queue holds at most one per key.
+  const char *key;
   std::string command;
   uint8_t expected_lines;
   std::function<void(bool ok, const std::vector<std::string> &lines)> on_done;
@@ -57,7 +60,7 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
   CallbackManager<void(bool)> available_callback;
 
  protected:
-  void enqueue_(std::string command, uint8_t expected_lines,
+  void enqueue_(const char *key, std::string command, uint8_t expected_lines,
                 std::function<void(bool ok, const std::vector<std::string> &lines)> on_done,
                 const char *last_line_marker = nullptr);
   void handle_line_(std::string line);

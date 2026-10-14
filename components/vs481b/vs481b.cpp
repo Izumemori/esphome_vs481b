@@ -1,6 +1,7 @@
 #include "vs481b.h"
 
 #include <cstdio>
+#include <cstring>
 #include <strings.h>
 
 namespace esphome {
@@ -13,6 +14,14 @@ static const char *const READ_COMMAND = "read";
 static const char *const READ_LAST_LINE =
     "F/W:";  // Last line of a read reply, which has an extra AutoPort line in auto mode
 static const uint8_t FAILED_READS_UNTIL_UNAVAILABLE = 3;
+
+// Queue keys, see PendingCommand::key. Mode and auto port share one: both change the mode.
+static const char *const KEY_READ = "read";
+static const char *const KEY_PORT = "port";
+static const char *const KEY_OUTPUT = "output";
+static const char *const KEY_MODE = "mode";
+static const char *const KEY_GOTO = "goto";
+static const char *const KEY_HPD = "hpd";
 
 void VS481B::setup() {
   // Defaults are applied once the switch answers its first read, see on_read_result_()
@@ -115,7 +124,7 @@ void VS481B::update() {
     if (cmd.command == READ_COMMAND) return;
 
   this->enqueue_(
-      READ_COMMAND, 0,
+      KEY_READ, READ_COMMAND, 0,
       [this](bool ok, const std::vector<std::string> &lines) {
         if (ok) this->apply_read_(lines);
         this->on_read_result_(ok);
@@ -209,7 +218,7 @@ void VS481B::apply_read_(const std::vector<std::string> &lines) {
 void VS481B::set_port(int port) {
   char command[16];
   snprintf(command, sizeof(command), "sw i%02d", port);
-  this->enqueue_(command, 1, [this, port](bool ok, const std::vector<std::string> &) {
+  this->enqueue_(KEY_PORT, command, 1, [this, port](bool ok, const std::vector<std::string> &) {
     if (ok) this->current_settings.port = port;
 
     // On failure, re-publish the old value so the select snaps back
@@ -231,7 +240,7 @@ void VS481B::set_mode(Mode mode) {
   }
 
   const char *command = mode == Mode::M_NEXT ? "swmode next" : "swmode default";
-  this->enqueue_(command, 1, [this, mode](bool ok, const std::vector<std::string> &) {
+  this->enqueue_(KEY_MODE, command, 1, [this, mode](bool ok, const std::vector<std::string> &) {
     if (ok) this->current_settings.mode = mode;
 
     // On failure, re-publish the old value so the select snaps back
@@ -242,7 +251,7 @@ void VS481B::set_mode(Mode mode) {
 void VS481B::set_auto_port(int port) {
   char command[24];
   snprintf(command, sizeof(command), "swmode i%02d auto", port);
-  this->enqueue_(command, 1, [this, port](bool ok, const std::vector<std::string> &) {
+  this->enqueue_(KEY_MODE, command, 1, [this, port](bool ok, const std::vector<std::string> &) {
     if (ok) {
       this->current_settings.auto_port = port;
       this->current_settings.mode = Mode::M_AUTO;
@@ -255,7 +264,7 @@ void VS481B::set_auto_port(int port) {
 }
 
 void VS481B::set_goto(bool state) {
-  this->enqueue_(state ? "swmode goto on" : "swmode goto off", 1,
+  this->enqueue_(KEY_GOTO, state ? "swmode goto on" : "swmode goto off", 1,
                  [this, state](bool ok, const std::vector<std::string> &) {
                    if (ok) this->current_settings.goto_enabled = state;
 
@@ -266,7 +275,7 @@ void VS481B::set_goto(bool state) {
 }
 
 void VS481B::set_output(bool state) {
-  this->enqueue_(state ? "sw on" : "sw off", 1, [this, state](bool ok, const std::vector<std::string> &) {
+  this->enqueue_(KEY_OUTPUT, state ? "sw on" : "sw off", 1, [this, state](bool ok, const std::vector<std::string> &) {
     if (ok) this->current_settings.output_enabled = state;
 
     // On failure, re-publish the old value so the switch snaps back
@@ -276,7 +285,7 @@ void VS481B::set_output(bool state) {
 }
 
 void VS481B::set_hpd(bool state) {
-  this->enqueue_(state ? "hpd on" : "hpd off", 1, [this, state](bool ok, const std::vector<std::string> &) {
+  this->enqueue_(KEY_HPD, state ? "hpd on" : "hpd off", 1, [this, state](bool ok, const std::vector<std::string> &) {
     if (ok) this->current_settings.hpd_enabled = state;
 
     // HPD can't be read back, so this always reflects the last successful command
@@ -284,10 +293,30 @@ void VS481B::set_hpd(bool state) {
   });
 }
 
-void VS481B::enqueue_(std::string command, uint8_t expected_lines,
+void VS481B::enqueue_(const char *key, std::string command, uint8_t expected_lines,
                       std::function<void(bool ok, const std::vector<std::string> &lines)> on_done,
                       const char *last_line_marker) {
-  this->queue_.push_back(PendingCommand{std::move(command), expected_lines, std::move(on_done), last_line_marker});
+  // While the switch isn't answering, each command would only wait out its timeout, and a
+  // backlog would replay stale actions once it's back. Fail straight away instead, so the
+  // entity snaps back. Reads still go out: they're how the switch is detected again.
+  if (!this->switch_available_ && strcmp(key, KEY_READ) != 0) {
+    ESP_LOGW(TAG, "Switch not responding, not sending: %s", command.c_str());
+    if (on_done) on_done(false, {});
+    return;
+  }
+
+  PendingCommand cmd{key, std::move(command), expected_lines, std::move(on_done), last_line_marker};
+
+  // Newest wins: replace a queued (not yet sent) command for the same setting
+  for (auto &queued : this->queue_) {
+    if (strcmp(queued.key, key) == 0) {
+      ESP_LOGV(TAG, "Replacing queued '%s' with '%s'", queued.command.c_str(), cmd.command.c_str());
+      queued = std::move(cmd);
+      return;
+    }
+  }
+
+  this->queue_.push_back(std::move(cmd));
 }
 
 void VS481B::handle_line_(std::string line) {
