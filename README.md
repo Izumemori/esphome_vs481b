@@ -50,10 +50,10 @@ uart:
     baud_rate: 19200
     tx_pin:
         number: 16
-        invert: false
+        inverted: false
     rx_pin:
         number: 17
-        invert: false
+        inverted: false
     data_bits: 8
     stop_bits: 1
     parity: NONE
