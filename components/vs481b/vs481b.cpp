@@ -19,20 +19,36 @@ void VS481B::setup() {
   this->status_set_warning("Waiting for the switch to respond");
 }
 
-// Called when the switch becomes available: after boot, or after it stopped answering
-// (power cycled or disconnected). A rebooted switch is back on its own defaults, so ours
-// are sent again.
-void VS481B::apply_defaults_() {
-  if (this->default_settings.port.has_value()) this->set_port(this->default_settings.port.value());
+// Brings the switch to `target`: the defaults when it first answers after boot, or the state
+// from before an outage when it answers again. Runs after a successful read, so only settings
+// that differ from what the switch just reported are sent. A switch that rebooted gets its
+// state back; after a mere connection glitch nothing needs to be sent.
+void VS481B::apply_settings_(const Settings &target) {
+  const Settings &now = this->current_settings;
 
-  if (this->default_settings.output_enabled.has_value())
-    this->set_output(this->default_settings.output_enabled.value());
+  if (target.port.has_value() && now.port != target.port) this->set_port(*target.port);
 
-  if (this->default_settings.mode.has_value()) this->set_mode(this->default_settings.mode.value());
+  if (target.output_enabled.has_value() && now.output_enabled != target.output_enabled)
+    this->set_output(*target.output_enabled);
 
-  if (this->default_settings.goto_enabled.has_value()) this->set_goto(this->default_settings.goto_enabled.value());
+  if (target.mode == Mode::M_AUTO) {
+    // Auto mode is entered by selecting the auto port, so a different auto port also needs sending
+    optional<int> auto_port = target.auto_port.has_value() ? target.auto_port : now.auto_port;
+    if (now.mode != Mode::M_AUTO || now.auto_port != auto_port) {
+      if (auto_port.has_value()) {
+        this->set_auto_port(*auto_port);
+      } else {
+        this->set_mode(Mode::M_AUTO);  // logs that there's no auto port to switch to
+      }
+    }
+  } else if (target.mode.has_value() && now.mode != target.mode) {
+    this->set_mode(*target.mode);
+  }
 
-  if (this->default_settings.hpd_enabled.has_value()) this->set_hpd(this->default_settings.hpd_enabled.value());
+  if (target.goto_enabled.has_value() && now.goto_enabled != target.goto_enabled) this->set_goto(*target.goto_enabled);
+
+  // HPD isn't in the read reply, so there's nothing to compare against: always send it
+  if (target.hpd_enabled.has_value()) this->set_hpd(*target.hpd_enabled);
 }
 
 void VS481B::dump_config() {
@@ -112,6 +128,7 @@ void VS481B::on_read_result_(bool ok) {
     if (this->failed_reads_ < FAILED_READS_UNTIL_UNAVAILABLE) this->failed_reads_++;
     if (this->switch_available_ && this->failed_reads_ >= FAILED_READS_UNTIL_UNAVAILABLE) {
       ESP_LOGW(TAG, "Switch stopped responding");
+      this->settings_before_outage_ = this->current_settings;
       this->switch_available_ = false;
       this->status_set_warning("Switch not responding");
       this->available_callback.call(false);
@@ -122,11 +139,18 @@ void VS481B::on_read_result_(bool ok) {
   this->failed_reads_ = 0;
   if (this->switch_available_) return;
 
-  ESP_LOGI(TAG, "Switch is responding, applying defaults");
   this->switch_available_ = true;
   this->status_clear_warning();
   this->available_callback.call(true);
-  this->apply_defaults_();
+
+  if (!this->was_ever_available_) {
+    ESP_LOGI(TAG, "Switch is responding, applying defaults");
+    this->was_ever_available_ = true;
+    this->apply_settings_(this->default_settings);
+  } else {
+    ESP_LOGI(TAG, "Switch is responding again, restoring the state from before the outage");
+    this->apply_settings_(this->settings_before_outage_);
+  }
 }
 
 // Takes over the state the switch reports. Only publishes, never sends commands back.

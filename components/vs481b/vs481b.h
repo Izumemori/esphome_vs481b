@@ -63,7 +63,7 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
   void handle_line_(std::string line);
   void finish_(bool ok);
   void apply_read_(const std::vector<std::string> &lines);
-  void apply_defaults_();
+  void apply_settings_(const Settings &target);
   void on_read_result_(bool ok);
 
   std::deque<PendingCommand> queue_;
@@ -73,9 +73,12 @@ class VS481B : public uart::UARTDevice, public PollingComponent {
   uint32_t sent_at_{0};
 
   // The switch counts as available after a successful read, and unavailable after
-  // several failed reads in a row. Defaults are applied each time it becomes available.
+  // several failed reads in a row. The first time it becomes available the defaults are
+  // applied; after an outage the state from before the outage is restored instead.
   bool switch_available_{false};
+  bool was_ever_available_{false};
   uint8_t failed_reads_{0};
+  Settings settings_before_outage_;
 
   Settings current_settings;
   Settings default_settings;

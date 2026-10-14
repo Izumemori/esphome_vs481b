@@ -226,7 +226,9 @@ text_sensor:
 
 #### Switch connection
 The component polls the HDMI switch and treats it as unavailable after 3 failed reads in a row (about 3 seconds at `update_interval: 1s`).
-Defaults are sent once the switch answers after the micro controller boots, and again whenever it answers after being unavailable, for example after the switch was power cycled.
+Defaults are applied once, when the switch first answers after the micro controller boots.
+When the switch answers again after being unavailable, the state from before the outage is restored instead, so a switch that was power cycled gets your settings back without overriding changes made since boot.
+Only settings that differ from what the switch reports are sent; Hot Plug detect is always re-sent, since it can't be read back.
 
 ESPHome can't mark individual entities as unavailable in Home Assistant, so the select and switch entities keep their last state while the HDMI switch isn't answering.
 To see whether it is answering, add a connectivity [binary sensor](https://esphome.io/components/binary_sensor/index.html):
