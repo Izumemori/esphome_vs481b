@@ -167,6 +167,7 @@ result-*
 
 # ESPHome
 .esphome/
+.test/
 secrets.yaml
 
 # clangd
